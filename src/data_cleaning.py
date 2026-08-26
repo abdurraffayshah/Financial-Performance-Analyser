@@ -4,18 +4,39 @@ import numpy as np
 path = '/Users/raffay/Desktop/Financial Performance Analyser/data/raw/myusabank.csv'
 
 def load_data(file_path):
+    '''
+    Load data from a CSV file and return a pandas DataFrame.
+    '''
     df = pd.read_csv(file_path)
     return df
 
+# Load the data from the CSV file
 dataFrame = load_data(path)
 
 def inspect_data(df):
+    '''
+    Inspect the DataFrame and print information about each column, including data type, number of null values, number of duplicates, and statistics.
+    '''
+
+    # Get the list of columns in the DataFrame
     list_of_columns = df.columns.tolist()
+
+    # Initialize lists to store information about each column
     numberOfNullValues = []
+
+    # Initialize lists to store information about each column
     numberOfDuplicates = []
+
+    # Initialize lists to store statistics for each column
     statistics = []
+
+    # Get the data types of each column in the DataFrame
     dataTypes = df.dtypes.tolist()
+
+    # Get the numeric columns in the DataFrame
     numeric_columns = df.select_dtypes(include="number").columns
+
+    # Loop through each column in the DataFrame and gather information about null values, duplicates, and statistics
     for i in list_of_columns:
         nullValue = int(pd.isnull(df[i]).sum())
         numberOfNullValues.append((nullValue))
@@ -27,6 +48,7 @@ def inspect_data(df):
         stats_list = stats.values.tolist()
         statistics.append(stats_list)
 
+    # Print the gathered information for each column
     for count in range(len(list_of_columns)):
         print(f"Column: {list_of_columns[count]}")
         print(f"Data Type: {dataTypes[count]}")
@@ -57,29 +79,52 @@ def inspect_data(df):
 
         
 def clean_columns_name(df):
+    '''
+    Clean the column names of the DataFrame by stripping whitespace, converting to lowercase, and replacing spaces with underscores.
+    '''
+
+    # Get the list of columns in the DataFrame
     list_of_columns = df.columns.tolist()
+
+    # Initialize a list to store the cleaned column names
     clean_columns = []
+
+    # Loop through each column name, clean it and add it to the list of cleaned column names
     for column in list_of_columns:
         column = column.strip().lower()
         column = column.replace(' ', '_')
         clean_columns.append(column)
+    
+    # Set the cleaned column names back to the DataFrame and return the cleaned DataFrame
     df.columns = clean_columns
     return df
 
+# Clean the column names of the DataFrame
 dataFrame = clean_columns_name(dataFrame)
 
 def remove_duplicates(df):
+    '''
+    Remove duplicate rows from the DataFrame.
+    '''
     df = df.drop_duplicates()
     return df
 
+# Remove duplicate rows from the DataFrame
 dataFrame = remove_duplicates(dataFrame)
 
 def handle_missing_values(df):
+    '''
+    Handle missing values in the DataFrame by dropping rows with null values in the 'date' column and dropping rows with 7 or more null values in other columns.
+    '''
+
+    # Loop through each row in the DataFrame and check for missing values
     for i, rows in df.iterrows():
         count=0
+        # Check if the 'date' column is null and drop the row if it is
         if pd.isnull(rows['date']):
                 df.drop(i, inplace=True)
                 continue
+        # Count the number of null values in the row and drop the row if there are 7 or more null values
         for column, values in rows.items():
             if pd.isnull(values):
                 count += 1
@@ -87,20 +132,36 @@ def handle_missing_values(df):
             df.drop(i, inplace=True)  
     return df
 
+# Handle missing values in the DataFrame
 dataFrame = handle_missing_values(dataFrame)
 
 def fix_data_types(df):
+    '''
+    Fix the data types of the columns in the DataFrame by converting the 'date' column to datetime and downcasting numeric columns to float.
+    '''
+
+    # Convert the 'date' column to datetime format
     df['date'] = pd.to_datetime(df['date'])
+
+    # Downcast numeric columns to float to save memory
     list_of_columns = df.columns.tolist()
     for name in list_of_columns:
         if name != 'date':
             df[name] = pd.to_numeric(df[name], downcast='float')
     return df
 
+# Fix the data types of the columns in the DataFrame
 dataFrame = fix_data_types(dataFrame)
 
 def handle_invalid_values(df):
+    '''
+    Handle invalid values in the DataFrame by replacing negative values with NaN for all columns except 'date', 'net_income', 'operating_income', 'shareholder_equity' and 'market_share'. For the 'market_share' column, replace values less than 0 or greater than 100 with NaN.
+    '''
+
+    # Get the list of columns in the DataFrame
     list_of_columns = df.columns.tolist()
+
+    # Loop through each column and replace invalid values with NaN
     for name in list_of_columns:
         if name != 'date' and name != 'net_income' and name != 'operating_income' and name != 'shareholder_equity' and name != 'market_share':
             df.loc[df[name] < 0, name] = np.nan
@@ -108,13 +169,22 @@ def handle_invalid_values(df):
             df.loc[(df[name] < 0) | (df[name] > 100), name] = np.nan
     return df
                 
-
+# Handle invalid values in the DataFrame and then handle missing values again to remove any rows that may have been affected by the invalid value handling
 dataFrame = handle_invalid_values(dataFrame)
 dataFrame = handle_missing_values(dataFrame)
 
 def check_outliers(df):
+    '''
+    Check for outliers in the DataFrame using the Interquartile Range (IQR) method for all columns except 'date' and 'market_share'. For the 'market_share' column, check for values less than 0 or greater than 100. Print a report of any outliers found.
+    '''
+
+    # Get the list of columns in the DataFrame
     list_of_columns = df.columns.tolist()
+
+    # Initialize a list to store the outlier report
     report = []
+
+    # Loop through each column and check for outliers using the IQR method or the specified bounds for 'market_share'
     for name in list_of_columns:
         if name != 'date' and name != 'market_share':
             l_quartile = df[name].quantile(0.25)
@@ -133,6 +203,7 @@ def check_outliers(df):
             if not outliers.empty:
                 report.append([name, l_bound, u_bound, outliers.count(), outliers.tolist()])
 
+    # Print the outlier report
     for index in range(len(report)):
         print (
             f"Column: {report[index][0]}"
@@ -143,4 +214,5 @@ def check_outliers(df):
             "\n"
         )
 
+# Call the function to check for outliers in the DataFrame
 check_outliers(dataFrame)
