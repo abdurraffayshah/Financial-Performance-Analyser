@@ -248,7 +248,11 @@ def create_financial_metrics(df):
 dataFrame = create_financial_metrics(dataFrame)
 
 def validate_data(df):
+    '''
+    Validate the DataFrame by checking for duplicates, missing dates, valid data types, invalid values, market share bounds, existence of financial metrics, and whether the DataFrame is empty. Print a validation report.
+    '''
 
+    #Initiate Validation Dictionary
     validate = {
         "duplicates": None,
         "missing_dates": None,
