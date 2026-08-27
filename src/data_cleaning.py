@@ -215,4 +215,139 @@ def check_outliers(df):
         )
 
 # Call the function to check for outliers in the DataFrame
-check_outliers(dataFrame)
+#check_outliers(dataFrame)
+
+def create_financial_metrics(df):
+    '''
+    Create financial metrics in the DataFrame, including net interest income, net interest margin, return on assets, return on equity, and cost to income ratio.
+    '''
+
+    # Calculate net interest income and insert it into the DataFrame
+    net_interest_income = df['interest_income'] - df['interest_expense']
+    df.insert(len(df.columns), 'net_interest_income', net_interest_income)
+
+    # Calculate net interest margin and insert it into the DataFrame
+    net_interest_margin =  (net_interest_income / df['average_earning_assets']) * 100
+    df.insert(len(df.columns), 'net_interest_margin', net_interest_margin)
+
+    # Calculate return on assets and insert it into the DataFrame
+    return_on_assets = (df['net_income'] / df['total_assets']) * 100
+    df.insert(len(df.columns), 'return_on_assets', return_on_assets)
+
+    # Calculate return on equity and insert it into the DataFrame
+    return_on_equity = (df['net_income'] / df['shareholder_equity']) * 100
+    df.insert(len(df.columns), 'return_on_equity', return_on_equity)
+
+    # Calculate cost to income ratio and insert it into the DataFrame
+    cost_to_income_ratio = (df['operating_expenses'] / df['operating_income']) * 100
+    df.insert(len(df.columns), 'cost_to_income_ratio', cost_to_income_ratio)
+
+    # Return the DataFrame with the new financial metrics
+    return df
+
+dataFrame = create_financial_metrics(dataFrame)
+
+def validate_data(df):
+
+    validate = {
+        "duplicates": None,
+        "missing_dates": None,
+        "valid_datatypes": None, 
+        "Invalid_values": None,
+        "market_share": None, 
+        "Financial_metrics": None, 
+        "dataframe_empty": None
+    }
+
+    # Check for duplicates
+    duplicates = df[df.duplicated()]
+
+    if not duplicates.empty:
+        validate["duplicates"] = False
+    else:
+        validate["duplicates"] = True
+
+
+    # Check for missing dates
+    if df['date'].isnull().any():
+        validate["missing_dates"] = False
+    else:
+        validate["missing_dates"] = True
+
+    # Check data types
+    validate["valid_datatypes"] = True
+
+    for name in df.columns:
+        if name != 'date':
+            if not pd.api.types.is_numeric_dtype(df[name]):
+                validate["valid_datatypes"] = False
+        elif name == 'date':
+            if df[name].dtype != 'datetime64[ns]':
+                validate["valid_datatypes"] = False
+
+    # Check for invalid negative values
+    validate["Invalid_values"] = True
+
+    for name in df.columns:
+        if (
+            name != 'date'
+            and name != 'net_income'
+            and name != 'operating_income'
+            and name != 'shareholder_equity'
+            and name != 'market_share'
+            and name != 'net_interest_income'
+            and name != 'net_interest_margin'
+            and name != 'return_on_assets'
+            and name != 'return_on_equity'
+            and name != 'cost_to_income_ratio'
+        ):
+            if (df[name] < 0).any():
+                validate["Invalid_values"] = False
+
+
+    # Check market share
+    if ((df['market_share'] < 0) | (df['market_share'] > 100)).any():
+        validate["market_share"] = False
+    else:
+        validate["market_share"] = True
+
+
+    # Check financial metric columns exist
+    financial_metrics = [
+        'net_interest_income',
+        'net_interest_margin',
+        'return_on_assets',
+        'return_on_equity',
+        'cost_to_income_ratio'
+    ]
+    validate["Financial_metrics"] = True
+    for metric in financial_metrics:
+        if metric not in df.columns:
+            validate["Financial_metrics"] = False
+
+
+    # Check DataFrame is not empty
+    if df.empty:
+        validate["dataframe_empty"] = False
+    else:
+        validate["dataframe_empty"] = True
+
+
+    # Print validation report
+    for key, value in validate.items():
+        if value == True:
+            print(f"{key} validation passed.")
+        else:
+            print(f"{key} validation failed.")
+
+validate_data(dataFrame)
+
+path = "/Users/raffay/Desktop/Financial Performance Analyser/data/processed"
+
+def save_date(df, path):
+    '''
+    Save the DataFrame to a CSV file in the specified path.
+    '''
+    df.to_csv(f"{path}/cleaned_data.csv", index=False)
+
+save_date(dataFrame, path)
