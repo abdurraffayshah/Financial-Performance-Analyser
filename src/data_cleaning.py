@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-path = '/Users/raffay/Desktop/Financial Performance Analyser/data/raw/myusabank.csv'
+path = 'data/raw/myusabank.csv'
 
 def load_data(file_path):
     '''
@@ -224,23 +224,23 @@ def create_financial_metrics(df):
 
     # Calculate net interest income and insert it into the DataFrame
     net_interest_income = df['interest_income'] - df['interest_expense']
-    df.insert(len(df.columns), 'net_interest_income', net_interest_income)
+    df.insert(len(df.columns), 'net_interest_income', net_interest_income.round(2))
 
     # Calculate net interest margin and insert it into the DataFrame
     net_interest_margin =  (net_interest_income / df['average_earning_assets']) * 100
-    df.insert(len(df.columns), 'net_interest_margin', net_interest_margin)
+    df.insert(len(df.columns), 'net_interest_margin', net_interest_margin.round(2))
 
     # Calculate return on assets and insert it into the DataFrame
     return_on_assets = (df['net_income'] / df['total_assets']) * 100
-    df.insert(len(df.columns), 'return_on_assets', return_on_assets)
+    df.insert(len(df.columns), 'return_on_assets', return_on_assets.round(2))
 
     # Calculate return on equity and insert it into the DataFrame
     return_on_equity = (df['net_income'] / df['shareholder_equity']) * 100
-    df.insert(len(df.columns), 'return_on_equity', return_on_equity)
+    df.insert(len(df.columns), 'return_on_equity', return_on_equity.round(2))
 
     # Calculate cost to income ratio and insert it into the DataFrame
     cost_to_income_ratio = (df['operating_expenses'] / df['operating_income']) * 100
-    df.insert(len(df.columns), 'cost_to_income_ratio', cost_to_income_ratio)
+    df.insert(len(df.columns), 'cost_to_income_ratio', cost_to_income_ratio.round(2))
 
     # Return the DataFrame with the new financial metrics
     return df
@@ -342,7 +342,7 @@ def validate_data(df):
 
 validate_data(dataFrame)
 
-path = "/Users/raffay/Desktop/Financial Performance Analyser/data/processed"
+path = "data/processed"
 
 def save_date(df, path):
     '''
