@@ -15,8 +15,7 @@ def close_connection(conn):
     if conn:
         conn.close()
 
-#Create a connection to the database
-connection = create_connection(path)
+
 
 def create_table(conn):
     '''
@@ -45,10 +44,6 @@ def create_table(conn):
     )
 ''')
     
-create_table(connection)
-
-#data path
-data = "data/processed/cleaned_data.csv"
 
 
 def insert_data(conn, data):
@@ -70,7 +65,6 @@ def insert_data(conn, data):
             INSERT OR IGNORE INTO financial_data (date, interest_income, interest_expense, average_earning_assets, net_income, total_assets, shareholder_equity, operating_expenses, operating_income, market_share, stock_price, net_interest_income, net_interest_margin, return_on_assets, return_on_equity, cost_to_income_ratio) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)''', line)
         conn.commit()
 
-insert_data(connection, data)
 
 
 def verify_data(conn):
@@ -83,7 +77,3 @@ def verify_data(conn):
     cursor.execute('SELECT * FROM financial_data LIMIT 7')
     for row in cursor.fetchall():
         print(row)
-
-verify_data(connection)
-
-close_connection(connection)
