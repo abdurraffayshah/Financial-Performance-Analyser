@@ -1,9 +1,3 @@
-from database import create_connection
-
-path = "database/financial_performance.db"
-
-connection = create_connection(path)
-
 def top_net_income(conn):
     """Return the five periods with the highest net income."""
     cursor = conn.cursor()
