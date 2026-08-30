@@ -35,5 +35,48 @@ def yearly_performance_summary(df):
     results = results.round(2)
     return results
 
-# Print yearly performance summary
-print(yearly_performance_summary(dataframe))
+def stock_price_correlation(df):
+    """Calculate and display Pearson correlation between stock price and financial metrics."""
+    
+    # Define columns to analyze for correlation with stock price
+    columns = ["stock_price", "net_income", "net_interest_margin", "return_on_assets", "return_on_equity", "cost_to_income_ratio"]
+    
+    # Calculate correlation matrix using Pearson method
+    correlations = df[columns].corr(method="pearson")
+    
+    # Extract stock price correlations
+    results = correlations["stock_price"]
+    
+    # Print correlation values rounded to 2 decimal places
+    for column in columns:
+        print(f"{column}: {round(results[column], 2)}")
+    
+
+def performance_change(df):
+    """Calculate percentage change in financial metrics from 2022 to 2023."""
+    
+    # Group dataframe by year and calculate mean values
+    df = df.groupby("year").mean()
+    
+    # Define financial metric columns to analyze
+    columns = ["net_income", "net_interest_margin", "return_on_assets", "return_on_equity", "cost_to_income_ratio", "stock_price"]
+    
+    # Select only the specified columns
+    df = df[columns]
+    
+    # Initialize list to store percentage change results
+    percentage_change = []
+    
+    # Calculate percentage change for each metric
+    for column in columns:
+        # Get 2022 and 2023 values
+        figure2022 = df[column].loc[2022]
+        figure2023 = df[column].loc[2023]
+        
+        # Calculate percentage change and round to 2 decimal places
+        p_change = round((float((figure2023 - figure2022) / figure2022) * 100), 2)
+        
+        # Append column name and percentage change to results
+        percentage_change.append([column, p_change])
+        
+    return percentage_change
