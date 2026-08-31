@@ -440,8 +440,8 @@ financial-performance-analyser
 │   ├── visualisations.py
 │   └── main.py
 │
-├── outputs
-│   └── charts
+|
+│   
 │
 ├── README.md
 │
@@ -558,9 +558,9 @@ A separate professional financial analysis report accompanies the project.
 
 [View the full Financial Performance Analysis Report](./Financial_Performance_Analysis_Report.pdf)
 
-The report will convert the technical analysis into a concise business focused interpretation of the bank's performance.
+The report converts the technical analysis into a concise business focused interpretation of the bank's performance.
 
-It will include:
+It includes:
 
 1. Executive Summary
 
