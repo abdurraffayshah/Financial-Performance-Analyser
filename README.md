@@ -554,7 +554,9 @@ The program will:
 
 ## 📊 Financial Analysis Report
 
-A separate professional financial analysis report will accompany the project.
+A separate professional financial analysis report accompanies the project.
+
+[View the full Financial Performance Analysis Report](./Financial_Performance_Analysis_Report.pdf)
 
 The report will convert the technical analysis into a concise business focused interpretation of the bank's performance.
 
@@ -582,7 +584,6 @@ It will include:
 
 11. Conclusion
 
-Once completed, the PDF report will be linked directly from this README.
 
 <br>
 
